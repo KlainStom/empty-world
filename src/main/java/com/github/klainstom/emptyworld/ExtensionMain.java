@@ -27,7 +27,7 @@ public class ExtensionMain extends Extension {
         getEventNode().addListener(PlayerLoginEvent.class, event -> {
             final Player player = event.getPlayer();
             event.setSpawningInstance(instanceContainer);
-            player.setRespawnPoint(new Pos(0, 61, 0));
+            player.setRespawnPoint(new Pos(8.5, 61, 8.5));
             player.setAutoViewable(false);
         });
     }
