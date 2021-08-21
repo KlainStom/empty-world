@@ -1,5 +1,6 @@
 package com.github.klainstom.emptyworld;
 
+import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
@@ -38,6 +39,7 @@ public class ExtensionMain extends Extension {
     @Override
     public void terminate() {
         MinecraftServer.LOGGER.info("$name$ terminate.");
+        instanceContainer.getPlayers().forEach(player -> player.kick(Component.text("This instance was destroyed.")));
         MinecraftServer.getInstanceManager().unregisterInstance(instanceContainer);
     }
 
