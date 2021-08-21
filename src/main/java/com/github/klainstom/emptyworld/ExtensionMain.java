@@ -24,6 +24,9 @@ public class ExtensionMain extends Extension {
         instanceContainer.enableAutoChunkLoad(false);
         instanceContainer.loadChunk(0,0);
 
+        instanceContainer.setTimeUpdate(null);
+        instanceContainer.setTime(-6000);
+
         getEventNode().addListener(PlayerLoginEvent.class, event -> {
             final Player player = event.getPlayer();
             event.setSpawningInstance(instanceContainer);
