@@ -3,10 +3,16 @@ package com.github.klainstom.emptyworld;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.damage.DamageType;
+import net.minestom.server.event.entity.EntityDamageEvent;
+import net.minestom.server.event.instance.AddEntityToInstanceEvent;
 import net.minestom.server.event.player.PlayerLoginEvent;
 import net.minestom.server.extensions.Extension;
-import net.minestom.server.instance.*;
+import net.minestom.server.instance.ChunkGenerator;
+import net.minestom.server.instance.ChunkPopulator;
+import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.batch.ChunkBatch;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.world.biomes.Biome;
@@ -31,8 +37,24 @@ public class ExtensionMain extends Extension {
         getEventNode().addListener(PlayerLoginEvent.class, event -> {
             final Player player = event.getPlayer();
             event.setSpawningInstance(instanceContainer);
-            player.setRespawnPoint(new Pos(8.5, 61, 8.5));
+            player.setRespawnPoint(new Pos(8.5, 1, 8.5));
+        });
+
+        getEventNode().addListener(AddEntityToInstanceEvent.class, event -> {
+            if (!event.getInstance().getUniqueId().equals(instanceContainer.getUniqueId())) return;
+            if (!(event.getEntity() instanceof Player)) return;
+            final Player player = (Player) event.getEntity();
             player.setAutoViewable(false);
+            player.setGameMode(GameMode.ADVENTURE);
+        });
+
+        getEventNode().addListener(EntityDamageEvent.class, event -> {
+            if (!event.getEntity().getInstance().getUniqueId().equals(instanceContainer.getUniqueId())) return;
+            if (!(event.getEntity() instanceof Player)) return;
+            if (event.getDamageType().equals(DamageType.VOID)) {
+                event.getEntity().teleport(((Player) event.getEntity()).getRespawnPoint());
+                event.setCancelled(true);
+            }
         });
     }
 
@@ -47,7 +69,7 @@ public class ExtensionMain extends Extension {
 
         @Override
         public void generateChunkData(ChunkBatch batch, int chunkX, int chunkZ) {
-            batch.setBlock(8, 60, 8, Block.STONE);
+            batch.setBlock(8, 0, 8, Block.STONE);
         }
 
         @Override
